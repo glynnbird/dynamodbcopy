@@ -51,6 +51,7 @@ var tableExport = function(region, sourceTable, destinationTable, callback) {
           }
           writeObj.RequestItems[destinationTable].push(obj)
         }
+        records += data.Items.length
 
         dynamoDB.batchWriteItem(writeObj, function(err, data) {
           process.stdout.write('.')
