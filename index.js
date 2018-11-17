@@ -17,7 +17,7 @@ var tableExport = function(region, sourceTable, destinationTable, callback) {
     var records = 0;
     var query = {
       TableName: sourceTable,
-      Limit: 100,
+      Limit: 25,
     };
     var start = new Date().getTime();
 
@@ -54,6 +54,9 @@ var tableExport = function(region, sourceTable, destinationTable, callback) {
         records += data.Items.length
 
         dynamoDB.batchWriteItem(writeObj, function(err, data) {
+          if (err) {
+            console.error(err)
+          }
           process.stdout.write('.')
           cb(null)
         })
