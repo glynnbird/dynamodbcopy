@@ -30,37 +30,42 @@ var tableExport = function(region, sourceTable, destinationTable, callback) {
           return callback(err, null);
         }
 
+
         // extract the data bit
         var items = data.Items;
         lastReply = data;
 
         // keep tally of how many DynamoDB requests we make
         iterations++;
-        var writeObj = {
-          RequestItems: {
 
-          }
-        }
-        writeObj.RequestItems[destinationTable] = []
-        for(var i in data.Items) {
-          var item = data.Items[i]
-          var obj = {
-            PutRequest: {
-              Item: item
+        if (data.Items.length > 0) {
+          var writeObj = {
+            RequestItems: {
+  
             }
           }
-          writeObj.RequestItems[destinationTable].push(obj)
-        }
-        records += data.Items.length
-
-        dynamoDB.batchWriteItem(writeObj, function(err, data) {
-          if (err) {
-            console.error(err)
+          writeObj.RequestItems[destinationTable] = []
+          for(var i in data.Items) {
+            var item = data.Items[i]
+            var obj = {
+              PutRequest: {
+                Item: item
+              }
+            }
+            writeObj.RequestItems[destinationTable].push(obj)
           }
-          process.stdout.write('.')
+          records += data.Items.length
+  
+          dynamoDB.batchWriteItem(writeObj, function(err, data) {
+            if (err) {
+              console.error(err)
+            }
+            process.stdout.write('.')
+            cb(null)
+          })
+        } else {
           cb(null)
-        })
-
+        }
       });
     }, function() {
       // check to see if we've more work to do
